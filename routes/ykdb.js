@@ -18,15 +18,21 @@ postMiddlewares = [
     },
     function collectionExists(req,res,next) {
         let collectionExists = false;
-        for(let collectionName of req.app.locals.ykdbCollectionNamesList){
-            if(collectionName === req.params.collection){
-                collectionExists = true;
-                break;
+        try{
+            for(let collectionName of req.app.locals.ykdbCollectionNamesList){
+                if(collectionName === req.params.collection){
+                    collectionExists = true;
+                    break;
+                }
             }
+        } catch (err) {
+            res.locals.result.code = 21;
+            res.locals.result.msg = `${req.app.locals.ykdbCollectionNamesList} is not iterable.`
+            res.status(400).send(res.locals.result);
         }
         if(collectionExists) next();
         else {
-            res.locals.result.code = 2;
+            res.locals.result.code = 22;
             res.locals.result.msg = `requested collection not found.`
             res.status(400).send(res.locals.result);
         };
