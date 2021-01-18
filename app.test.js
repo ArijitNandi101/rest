@@ -4,7 +4,7 @@ const request = supertest(app);
 
 describe('post request to yk db', () => {
     beforeAll(async (done) => {
-        connect(done); 
+        connect().then(done); 
     });
     afterAll(async (done) => {
         await client.close();
