@@ -2,10 +2,10 @@ require("dotenv").config();
 const express = require("express");
 const { MongoClient } = require("mongodb");
 const app = express();
-const ykRouter = require("./routes/yk");
+const ykdbRouter = require("./routes/ykdb");
 
 app.use(express.json());
-app.use("/yk",ykRouter);
+app.use("/yk",ykdbRouter);
 
 const server = app.listen(
     process.env.PORT,
@@ -26,6 +26,12 @@ client.connect(async function(err) {
     }
     console.log("client connected.");
     app.locals.ykdb = client.db();
+    let cursor = await app.locals.ykdb.listCollections();
+    let collections = await cursor.toArray();
+    app.locals.ykdbCollectionNamesList = [];
+    for(let collection of collections){
+        app.locals.ykdbCollectionNamesList.push(collection.name);
+    }
 });
 
 process.on('SIGINT', async function(code) {

@@ -1,1 +1,11 @@
 GET http://localhost:3030/yk/
+###
+POST http://localhost:3030/yk/inventory
+Content-Type: application/json
+
+{
+    "startDate": "2016-01-26",
+    "endDate": "2018-02-02",
+    "minCount": 2700,
+    "maxCount": 5000
+}
