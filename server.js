@@ -1,8 +1,11 @@
-const { app, client } = require("./app");
+const { app, client, connect } = require("./app");
 
 const server = app.listen(
     process.env.PORT,
-    () => console.log(`server strted on port ${process.env.PORT}`)
+    async () => {
+        console.log(`server strted on port ${process.env.PORT}`);
+        await connect();
+    }
 );
 
 process.on('SIGINT', async function(code) {

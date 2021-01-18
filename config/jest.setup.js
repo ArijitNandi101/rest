@@ -15,6 +15,9 @@ function toMatchResponsePayloadStructure(actual, expected){
     };
 }
 
+
+jest.setTimeout(30000);
+
 expect.extend({
     toMatchResponsePayloadStructure
  });

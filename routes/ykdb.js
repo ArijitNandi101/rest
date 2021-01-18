@@ -1,5 +1,14 @@
 const router = require("express").Router();
 
+router.use(async function(req,res,next){
+    res.locals.result = {
+        code: 100,
+        msg: "failed to connect to database.",
+        records: null
+    };
+    next();
+})
+
 postMiddlewares = [
     function contentTypeValidation(req,res,next){
         res.locals.result = {
@@ -18,21 +27,15 @@ postMiddlewares = [
     },
     function collectionExists(req,res,next) {
         let collectionExists = false;
-        try{
-            for(let collectionName of req.app.locals.ykdbCollectionNamesList){
-                if(collectionName === req.params.collection){
-                    collectionExists = true;
-                    break;
-                }
+        for(let collectionName of req.app.locals.ykdbCollectionNamesList){
+            if(collectionName === req.params.collection){
+                collectionExists = true;
+                break;
             }
-        } catch (err) {
-            res.locals.result.code = 21;
-            res.locals.result.msg = `${req.app.locals.ykdbCollectionNamesList} is not iterable.`
-            res.status(400).send(res.locals.result);
         }
         if(collectionExists) next();
         else {
-            res.locals.result.code = 22;
+            res.locals.result.code = 2;
             res.locals.result.msg = `requested collection not found.`
             res.status(400).send(res.locals.result);
         };
@@ -63,7 +66,13 @@ postMiddlewares = [
             isNaN(res.locals.startDate) ||
             isNaN(res.locals.endDate) ||
             isNaN(res.locals.minCount) ||
-            isNaN(res.locals.maxCount)
+            isNaN(res.locals.maxCount) ||
+            req.body.minCount === null ||
+            req.body.maxCount === null ||
+            req.body.minCount !== ~~(req.body.minCount) ||
+            req.body.maxCount !== ~~(req.body.maxCount) ||
+            res.locals.minCount < 0 ||
+            res.locals.maxCount < 0
         ){
             res.locals.result.code = 4;
             res.locals.result.msg = "Invalid format";
@@ -116,7 +125,7 @@ router.post("/:collection",postMiddlewares,async function(req,res){
         res.status(200).send(res.locals.result);
     } catch(err){
         console.log(err.stack);
-        res.status(400).send({code:11,msg:"bad request.",records:null});
+        res.status(400).send({code:5,msg:"bad request.",records:null});
     }
 });
 
