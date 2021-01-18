@@ -20,18 +20,17 @@ client.connect(async function(err) {
     console.log("trying connection.");
     if(err){
         console.error(err.stack);
-        client.close();
-        server.close();
-        console.log("connection failed.")
+        console.log("connection failed.");
+        process.emit("SIGINT");
         return;
     }
     console.log("client connected.");
-    app.locals.yk = client.db(); 
+    app.locals.ykdb = client.db();
 });
 
 process.on('SIGINT', async function(code) {
     console.log("Closing database client connection.")
     await client.close();
-    console.log(`Database Connection closed. Exiting with code: ${code}`);
+    console.log("Database Connection closed. Exiting.");
     process.exit();
 });
