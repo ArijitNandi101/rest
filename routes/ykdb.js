@@ -23,11 +23,29 @@ router.post("/:collection",async function(req,res){
             }
         }
         if(collectionExists){
-            const cursor = await ykdb.collection(collectionName).find({}).limit(100);
-            const data = await cursor.toArray();
-            result.code = 0;
-            result.msg = "success";
-            result.records = data;
+            if(
+                req.body === undefined ||
+                req.body.startDate === undefined || 
+                req.body.endDate === undefined ||
+                req.body.minCount === undefined || 
+                req.body.maxCount === undefined
+            ){
+                result.code = 1;
+                result.msg = "invalid request payload";
+            } else {
+                    var startDate = new Date(req.body.startDate.replace(/(\d{4})-(\d{2})-(\d{2})/,"$2/$3/$1"));
+                    var endDate = new Date(req.body.endDate.replace(/(\d{4})-(\d{2})-(\d{2})/,"$2/$3/$1"));
+                if(isNaN(startDate) || isNaN(endDate)){
+                    result.code = 2;
+                    result.msg = "Invalid date format";
+                } else {
+                    const cursor = await ykdb.collection(collectionName).find({}).limit(100);
+                    const data = await cursor.toArray();
+                    result.code = 0;
+                    result.msg = "success";
+                    result.records = data;
+                }
+            }
         } else {
             result.code = 10;
             result.msg = `requested collection not found.`
