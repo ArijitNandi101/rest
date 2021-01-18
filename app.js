@@ -13,6 +13,12 @@ const client = new MongoClient(
     process.env.DATABASE_URI,
     mongodbConfig,
 );
+/**
+ *  Uses a MongoClient object to connect to a database uri as speciied in the environment configuration.
+ *  After successful connection, queries the database and saves the names of all collections to be used 
+ *  for request validation later.
+ * @returns {Promise} - the promise is resolved after a successful database connection otherwise rejected 
+ */
 function connect(){
     return new Promise((resolve,reject) => {
         client.connect(

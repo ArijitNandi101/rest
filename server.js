@@ -7,6 +7,10 @@ let swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use('/api-docs',swaggerUI.serve,swaggerUI.setup(swaggerDocs));
 
 let server = null;
+/**
+ * after successu connection, the express server is started on PORT
+ * provided in environment configuration
+ */
 connect().then(() => {
     server = app.listen(
         process.env.PORT,
@@ -19,6 +23,10 @@ connect().then(() => {
     process.emit("SIGINT");
 });
 
+/**
+ * on receiving a interrupt the application closes database connection if open
+ * and stops server if running and exits.
+ */
 process.on('SIGINT', async function(code) {
     console.log("Closing database client connection.");
     await client.close();
