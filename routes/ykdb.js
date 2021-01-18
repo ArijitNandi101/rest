@@ -43,6 +43,7 @@ postMiddlewares = [
     function(req,res,next) {
         if(
             req.body === undefined ||
+            Object.keys(req.body).length > 4 || 
             req.body.startDate === undefined || 
             req.body.endDate === undefined ||
             req.body.minCount === undefined || 
