@@ -1,4 +1,11 @@
 const { app, client, connect } = require("./app");
+const swaggerJsDoc = require("swagger-jsdoc");
+const swaggerUI = require("swagger-ui-express");
+const swaggerOptions = require("./config/swagger");
+
+let swaggerDocs = swaggerJsDoc(swaggerOptions);
+app.use('/api-docs',swaggerUI.serve,swaggerUI.setup(swaggerDocs));
+
 let server = null;
 connect().then(() => {
     server = app.listen(

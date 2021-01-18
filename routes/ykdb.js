@@ -1,5 +1,6 @@
 const router = require("express").Router();
 
+// router-level middleware
 router.use(async function(req,res,next){
     res.locals.result = {
         code: 100,
@@ -9,6 +10,7 @@ router.use(async function(req,res,next){
     next();
 })
 
+//request-method-level middleware
 postMiddlewares = [
     function contentTypeValidation(req,res,next){
         res.locals.result = {
@@ -40,7 +42,7 @@ postMiddlewares = [
             res.status(400).send(res.locals.result);
         };
     },
-    function(req,res,next) {
+    function payloadVlidation(req,res,next) {
         if(
             req.body === undefined ||
             Object.keys(req.body).length > 4 || 
@@ -54,7 +56,7 @@ postMiddlewares = [
             res.status(400).send(res.locals.result);
         } else next();
     },
-    function(req,res,next) {
+    function payloadDataValidation(req,res,next) {
         res.locals.startDate = new Date(
             req.body.startDate
         );
@@ -82,6 +84,49 @@ postMiddlewares = [
     }
 ];
 
+//routes
+/**
+ * @swagger
+ * paths:
+ *   /yk/{collection}:
+ *     post:
+ *       description: get filtered data from collections in yk database
+ *       parameters:
+ *         - name: collection
+ *           in: path
+ *           required: true
+ *           schema:
+ *             type: string
+ *           description: the collection in the db that will be queried
+ *         - name: payload
+ *           in: body
+ *           required: true
+ *           schema:
+ *             $ref: '#/components/schemas/payload'
+ *           description: payload data required to filter query results
+ * 
+ *       responses:
+ *         '200':
+ *           description: OK
+ * 
+ * components:
+ *   schemas:
+ *     payload:
+ *       type: object
+ *       properties:
+ *         startDate:
+ *           type: string
+ *           example: 2016-02-22
+ *         endDate:
+ *           type: string
+ *           example: 2018-08-15
+ *         minCount:
+ *           type: integer
+ *           example: 4
+ *         maxCount:
+ *           type: string
+ *           example: 7
+ */
 router.post("/:collection",postMiddlewares,async function(req,res){
     try{
         let ykdb = req.app.locals.ykdb;

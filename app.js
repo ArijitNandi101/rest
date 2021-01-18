@@ -5,6 +5,7 @@ const mongodbConfig = require("./config/mongodb");
 const app = express();
 const ykdbRouter = require("./routes/ykdb");
 
+//application-level middleware
 app.use(express.json());
 app.use("/yk",ykdbRouter);
 
